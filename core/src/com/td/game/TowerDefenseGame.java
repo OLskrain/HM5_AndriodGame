@@ -13,8 +13,7 @@ public class TowerDefenseGame extends ApplicationAdapter {
     private Turret turret;
     private MonsterEmitter monsterEmitter;
     private TextureAtlas atlas; //атлас текстур
-    private float monsterSpawnTimer;
-    private int lastRoute; // для определения индекса
+    private Spawner spawner;
 
     public MonsterEmitter getMonsterEmitter() {
         return monsterEmitter;
@@ -27,6 +26,7 @@ public class TowerDefenseGame extends ApplicationAdapter {
         map = new Map(atlas);
         turret = new Turret(atlas, this, map, 0, 0);
         monsterEmitter = new MonsterEmitter(atlas, map, 60);
+        spawner = new Spawner(monsterEmitter);
     }
 
     @Override
@@ -43,18 +43,10 @@ public class TowerDefenseGame extends ApplicationAdapter {
     }
 
     public void update(float dt) {
-        monsterSpawnTimer += dt; //увеличиваем время сначала игры
-        if (monsterSpawnTimer > 4.0f) { // если вдруг прошло больше 4 секунд
-            monsterSpawnTimer = 0.0f;//обнуляем
-            for (int i = 0; i < 8; i++) {// запрашиваем 8 монстров
-                monsterEmitter.createMonster(lastRoute % 2);
-                lastRoute++;
-            }
-        }
-
         map.update(dt);
         monsterEmitter.update(dt);
         turret.update(dt);
+        spawner.update(dt);
         if (Gdx.input.justTouched()) {//если мы нажали кннопку
             int cx = (int) (Gdx.input.getX() / 80);
             int cy = (int) ((720 - Gdx.input.getY()) / 80);
